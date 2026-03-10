@@ -32,7 +32,8 @@ class AplicacionCorrectora(ctk.CTk):
         # Diseño de la interfaz
         self.grid_columnconfigure(0, weight=1)
         
-        self.label = ctk.CTkLabel(self, text="SteamTools Fixer", font=ctk.CTkFont(size=26, weight="bold"), text_color="#00ffff")
+        # Título centrado en la parte superior del programa
+        self.label = ctk.CTkLabel(self, text="SteamTools Fixer", font=ctk.CTkFont(size=28, weight="bold"), text_color="#00ffff")
         self.label.pack(pady=(25, 5))
 
         self.sublabel = ctk.CTkLabel(self, text="Limpieza de caché y optimización de configuración", font=ctk.CTkFont(size=13))
@@ -63,7 +64,7 @@ class AplicacionCorrectora(ctk.CTk):
         hilo.start()
 
     def buscar_steam(self):
-        self.registrar("[Paso 1] Localizando instalación de Steam en el sistema...")
+        self.registrar("[Paso 1] Localizando instalación de Steam...")
         rutas_registro = [
             (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\WOW6432Node\Valve\Steam"),
             (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Valve\Steam"),
@@ -108,7 +109,7 @@ class AplicacionCorrectora(ctk.CTk):
         ruta_plugins = os.path.join(ruta_steam, "config", "stplug-in")
         if os.path.exists(ruta_plugins):
             archivos_lua = [f for f in os.listdir(ruta_plugins) if f.endswith('.lua')]
-            self.registrar(f"Se encontraron {len(archivos_lua)} archivos de configuración.")
+            self.registrar(f"Se encontraron {len(archivos_lua)} archivos .lua.")
         else:
             self.registrar("AVISO: Carpeta de configuraciones no encontrada.")
 
@@ -126,7 +127,7 @@ class AplicacionCorrectora(ctk.CTk):
         try:
             if not os.path.exists(ruta_respaldo): os.makedirs(ruta_respaldo)
             
-            # Limpieza de Appcache (Preservando estadísticas locales)
+            # Limpieza de Appcache (Preservando estadísticas locales 'stats')
             appcache = os.path.join(ruta_steam, "appcache")
             respaldo_app = os.path.join(ruta_respaldo, "appcache")
             if os.path.exists(appcache):
@@ -146,7 +147,7 @@ class AplicacionCorrectora(ctk.CTk):
                 if os.path.exists(respaldo_depot): shutil.rmtree(respaldo_depot, ignore_errors=True)
                 shutil.move(depot, respaldo_depot)
 
-            # Limpieza de datos de usuario (Preservando tiempo de juego)
+            # Limpieza de datos de usuario (PRESERVANDO TIEMPOS DE JUEGO)
             userdata = os.path.join(ruta_steam, "userdata")
             if os.path.exists(userdata):
                 for usuario in os.listdir(userdata):
@@ -160,13 +161,15 @@ class AplicacionCorrectora(ctk.CTk):
                             os.makedirs(os.path.dirname(respaldo_usuario), exist_ok=True)
                             shutil.move(config, respaldo_usuario)
                             
-                            # Restaurar localconfig.vdf inmediatamente
+                            # Restauración del archivo de tiempo de juego (localconfig.vdf)
                             os.makedirs(config, exist_ok=True)
-                            shutil.copy2(os.path.join(respaldo_usuario, "localconfig.vdf"), os.path.join(config, "localconfig.vdf"))
+                            if os.path.exists(os.path.join(respaldo_usuario, "localconfig.vdf")):
+                                shutil.copy2(os.path.join(respaldo_usuario, "localconfig.vdf"), os.path.join(config, "localconfig.vdf"))
             
-            self.registrar("¡Limpieza finalizada con éxito!")
+            # Mensajes finales de éxito al terminar limpieza
+            self.registrar("Proceso finalizado iniciando Steam.")
             subprocess.Popen([os.path.join(ruta_steam, "steam.exe"), "-clearbeta"])
-            messagebox.showinfo("Éxito", "Proceso completado. Steam se está reiniciando.")
+            messagebox.showinfo("Éxito", "Proceso finalizado iniciando Steam.")
         except Exception as e:
             self.registrar(f"Ocurrió un error inesperado: {e}")
         
@@ -183,8 +186,11 @@ class AplicacionCorrectora(ctk.CTk):
                 else: os.remove(destino)
             shutil.move(origen, destino)
         shutil.rmtree(ruta_respaldo)
+        
+        # Mensajes finales de éxito al terminar restauración
+        self.registrar("Proceso finalizado iniciando Steam.")
         subprocess.Popen([os.path.join(ruta_steam, "steam.exe"), "-clearbeta"])
-        self.registrar("Respaldo restaurado correctamente.")
+        messagebox.showinfo("Éxito", "Proceso finalizado iniciando Steam.")
         self.restablecer_boton()
 
     def restablecer_boton(self):
