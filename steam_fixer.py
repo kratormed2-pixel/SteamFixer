@@ -25,14 +25,14 @@ class AplicacionCorrectora(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("Corrector de Steam - Interfaz Gráfica")
+        self.title("SteamTools Fixer")
         self.geometry("650x550")
         self.resizable(False, False)
 
         # Diseño de la interfaz
         self.grid_columnconfigure(0, weight=1)
         
-        self.label = ctk.CTkLabel(self, text="Corrector de Archivos", font=ctk.CTkFont(size=26, weight="bold"), text_color="#00ffff")
+        self.label = ctk.CTkLabel(self, text="SteamTools Fixer", font=ctk.CTkFont(size=26, weight="bold"), text_color="#00ffff")
         self.label.pack(pady=(25, 5))
 
         self.sublabel = ctk.CTkLabel(self, text="Limpieza de caché y optimización de configuración", font=ctk.CTkFont(size=13))
